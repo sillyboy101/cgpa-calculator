@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGPA Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 2.5px solid #64e79b93;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #8275f0;
+            color: rgb(133, 69, 236);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #cbf36f;
+        }
+        #course-inputs {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CGPA Calculator</h1>
+        <div class="input-group">
+            <label for="num-courses">Enter the total number of courses:</label>
+            <input type="number" id="num-courses" min="1">
+        </div>
+        <button onclick="generateCourseInputs()">Submit</button>
+        <div id="course-inputs"></div>
+    </div>
+    <script>
+        function generateCourseInputs() {
+            const numCourses = document.getElementById('num-courses').value;
+            const courseInputsDiv = document.getElementById('course-inputs');
+            courseInputsDiv.innerHTML = ''; // Clear any existing inputs
+
+            for (let i = 1; i <= numCourses; i++) {
+                const courseGroup = document.createElement('div');
+                courseGroup.className = 'input-group';
+
+                const courseLabel = document.createElement('label');
+                courseLabel.innerText = `Course ${i} Code:`;
+                courseGroup.appendChild(courseLabel);
+
+                const courseInput = document.createElement('input');
+                courseInput.type = 'text';
+                courseInput.name = `course-code-${i}`;
+                courseInput.required = true;
+                courseGroup.appendChild(courseInput);
+
+                const gradeLabel = document.createElement('label');
+                gradeLabel.innerText = `Course ${i} Grade:`;
+                courseGroup.appendChild(gradeLabel);
+
+                const gradeInput = document.createElement('input');
+                gradeInput.type = 'number';
+                gradeInput.name = `course-grade-${i}`;
+                gradeInput.min = 0;
+                gradeInput.max = 10;
+                gradeInput.step = 0.1;
+                gradeInput.required = true;
+                courseGroup.appendChild(gradeInput);
+
+                courseInputsDiv.appendChild(courseGroup);
+            }
+
+            const calculateButton = document.createElement('button');
+            calculateButton.innerText = 'Calculate CGPA';
+            calculateButton.onclick = calculateCGPA;
+            courseInputsDiv.appendChild(calculateButton);
+        }
+
+        function calculateCGPA() {
+            // Define your course data sheet here
+            const courseDataSheet = {
+                'COURSE101': { credits: 3 },
+                'COURSE102': { credits: 4 },
+                'COURSE103': { credits: 2 },
+                // Add all relevant courses and their credits
+            };
+
+            let totalWeightedCredits = 0;
+            let totalCredits = 0;
+
+            const numCourses = document.getElementById('num-courses').value;
+            for (let i = 1; i <= numCourses; i++) {
+                const courseCode = document.querySelector(`input[name=course-code-${i}]`).value.toUpperCase();
+                const courseGrade = parseFloat(document.querySelector(`input[name=course-grade-${i}]`).value);
+
+                if (courseDataSheet[courseCode]) {
+                    const courseCredits = courseDataSheet[courseCode].credits;
+                    totalWeightedCredits += courseGrade * courseCredits;
+                    totalCredits += courseCredits;
+                } else {
+                    alert(`Course code ${courseCode} not found in data sheet.`);
+                    return;
+                }
+            }
+
+            const cgpa = totalWeightedCredits / totalCredits;
+            alert(`Your CGPA is: ${cgpa.toFixed(2)}`);
+        }
+    </script>
+</body>
+</html>
